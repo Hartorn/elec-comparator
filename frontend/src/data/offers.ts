@@ -1,0 +1,49 @@
+import { Base as EdfBase, HPHC as EdfHPHC } from "./EDF";
+import {
+  PRUDENCE,
+  PRUDENCE_HPHC,
+  CONSTANCE,
+  CONSTANCE_HPHC,
+  GARANCE,
+  GARANCE_HPHC,
+} from "./LaBelleEnergie";
+import {
+    ALPIQ_STABLE,
+    ALPIQ_HPHC,
+    ALPIQ_PROMO,
+    ALPIQ_PROMO_HPHC
+  } from "./Alpiq";
+  import {
+    ONLINE_BASE,
+    ONLINE_HPHC,
+    CLASSIC_BASE,
+    CLASSIC_HPHC
+  } from "./MintEnergie";
+
+import {
+  ALTERNA_FRANCE_HPHC, ALTERNA_LOCAL_HPHC, ALTERNA_FRANCE_BASE, ALTERNA_LOCAL_BASE
+} from "./Alterna";
+import { Offer } from "./types";
+
+export default [
+  EdfBase,
+  EdfHPHC,
+  PRUDENCE,
+  PRUDENCE_HPHC,
+  CONSTANCE,
+  CONSTANCE_HPHC,
+  GARANCE,
+  GARANCE_HPHC,
+  ALPIQ_STABLE,
+ALPIQ_HPHC,
+ALPIQ_PROMO,
+ALPIQ_PROMO_HPHC,
+ONLINE_BASE,
+ONLINE_HPHC,
+CLASSIC_BASE,
+CLASSIC_HPHC,
+ALTERNA_LOCAL_HPHC,
+ALTERNA_FRANCE_HPHC,
+ALTERNA_FRANCE_BASE,
+ ALTERNA_LOCAL_BASE
+] as Offer[];

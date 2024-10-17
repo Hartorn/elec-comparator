@@ -1,0 +1,52 @@
+#https://docs.docker.com/compose/compose-file/
+name: elec-comparator
+services:
+  proxy:
+    image: "traefik:latest"
+    command:
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+    ports:
+      - "80:80"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+    networks:
+      - elec
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.proxy.rule=Host(`proxy.elec.localhost`)"
+      - "traefik.http.routers.proxy.entrypoints=web"
+      - "traefik.http.services.proxy.loadbalancer.server.port=8080"
+  frontend:
+    build:
+      context: ./frontend
+      target: dev
+      args:
+        - USERNAME=${USERNAME}
+        - USER_UID=${USER_UID}
+        - USER_GID=${USER_GID}
+        - HOME_DIR=${HOME_DIR}
+    volumes:
+      - ./data:/data
+      - ./frontend:/work/frontend
+      - nodejs_deps_frontend:/work/frontend/node_modules:cached
+      - nodejs_pnpm_store:/work/frontend/.pnpm-store:cached
+    working_dir: /work/frontend
+    command: pnpm run dev
+    networks:
+      - elec
+    environment: []
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.frontend.rule=Host(`app.elec.localhost`)"
+      - "traefik.http.routers.frontend.entrypoints=web"
+      - "traefik.http.services.frontend.loadbalancer.server.port=3000"
+
+volumes:
+  nodejs_deps_frontend:
+  nodejs_pnpm_store:
+networks:
+  elec:
+    driver: bridge

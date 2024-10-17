@@ -41,10 +41,6 @@ setup: _build ## Build and install the dependencies
 	docker compose run --rm ${SVC_FRONTEND} pnpm i
 .PHONY: setup
 
-test: ## Launch unit tests
-	docker compose run --rm ${SVC_BACKEND} poetry run pytest
-.PHONY: test
-
 format: ## Format all files inside frontend
 	docker compose run --rm ${SVC_FRONTEND} pnpm run format
 .PHONY: format

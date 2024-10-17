@@ -2,12 +2,13 @@ import { Offer, OfferType } from "./data/types";
 
 function buildHpHcMapping(ranges: string[][]) {
   const predicate = (_: string, time: string) =>
-
     // 00h56 à 6h38 => time >= start && time < end
     // 22h30 à 6h38 => time >= start || time < end
     // start > end ? (time >= start || time < end) : (time >= start && time < end)
 
-    ranges.some(([start, end]) => start > end ? (time >= start || time < end) : time >= start && time < end);
+    ranges.some(([start, end]) =>
+      start > end ? time >= start || time < end : time >= start && time < end,
+    );
   return {
     HP: (date: string, time: string) => !predicate(date, time),
     HC: predicate,

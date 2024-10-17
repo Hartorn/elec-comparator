@@ -30,7 +30,7 @@ export const ONLINE_BASE = {
       Base: 0.1906,
     },
     24: {
-      monthly: 33.10,
+      monthly: 33.1,
       Base: 0.1906,
     },
     30: {
@@ -70,7 +70,7 @@ export const ONLINE_HPHC = {
       HC: 0.1577,
     },
     18: {
-      monthly: 28.20,
+      monthly: 28.2,
       HP: 0.2039,
       HC: 0.1577,
     },
@@ -91,8 +91,6 @@ export const ONLINE_HPHC = {
     },
   },
 } as Offer;
-
-
 
 export const CLASSIC_BASE = {
   provider: "Mint Energie",
@@ -185,4 +183,3 @@ export const CLASSIC_HPHC = {
     },
   },
 } as Offer;
-

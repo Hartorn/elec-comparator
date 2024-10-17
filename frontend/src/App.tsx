@@ -21,9 +21,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {Plus} from 'lucide-react';
+import { Plus } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 import { ConsommationChart } from "./components/chart";
 import { calculateOffer, csvToObj } from "./data";
@@ -45,24 +45,23 @@ function App() {
   const [abo, setAbo] = useState(13.01);
   const [basekWh, setBasekWh] = useState(0.2516);
   const [hckWh, sethckWh] = useState(0.2068);
-  const [hpkWh, sethpkWh] = useState(0.2700);
+  const [hpkWh, sethpkWh] = useState(0.27);
 
   const [typeAbo, setTypeAbo] = useState("HPHC");
 
-  const [hourRanges, setHourRange] = useState([[22,38,6,38]]);
+  const [hourRanges, setHourRange] = useState([[22, 38, 6, 38]]);
 
-
-  const hcRanges = hourRanges.map( ([hStart, minStart, hStop, minStop]) =>  ([
+  const hcRanges = hourRanges.map(([hStart, minStart, hStop, minStop]) => [
     `${padNumber(hStart)}:${padNumber(minStart)}:00`,
     `${padNumber(hStop)}:${padNumber(minStop)}:00`,
-  ]));
+  ]);
   // [
   //   [
   //     `${padNumber(hStart)}:${padNumber(minStart)}:00`,
   //     `${padNumber(hStop)}:${padNumber(minStop)}:00`,
   //   ],
   // ];
-  const referenceOffer : Offer = {
+  const referenceOffer: Offer = {
     provider: "",
     reference: true,
     name: "Offre actuelle",
@@ -70,12 +69,15 @@ function App() {
     prices: {
       [puissance]: {
         monthly: abo,
-        ...((typeAbo == "BASE" && {Base: basekWh}) ?? {}),
-        ...((typeAbo == "HPHC" && {HP: hpkWh, HC: hckWh}) ?? {}),
-      }}};
+        ...((typeAbo == "BASE" && { Base: basekWh }) ?? {}),
+        ...((typeAbo == "HPHC" && { HP: hpkWh, HC: hckWh }) ?? {}),
+      },
+    },
+  };
 
   const computedOffers = csv?.conso
-    ? offers.concat([referenceOffer])
+    ? offers
+        .concat([referenceOffer])
         .filter((offer) => offer.prices[puissance])
         .map((offer) => ({
           ...offer,
@@ -105,11 +107,30 @@ function App() {
                 </CardHeader>
                 <CardContent>
                   <div className="grid gap-y-4">
-                    <Label className="flex-auto">Mes heures creuses
-                    <Button className="ml-2" variant="outline" size="icon" onClick={() => setHourRange(hourRanges.concat([[22,38,6,38]]))}>
-                      <Plus className="h-4 w-4" />
-                    </Button></Label>
-                    {hourRanges.map((elt, i) => (<HourRangeInput key={i} values={elt} onChange={elt => setHourRange(hourRanges.map((e, j) => i == j ? elt : e)) }/>))}
+                    <Label className="flex-auto">
+                      Mes heures creuses
+                      <Button
+                        className="ml-2"
+                        variant="outline"
+                        size="icon"
+                        onClick={() =>
+                          setHourRange(hourRanges.concat([[22, 38, 6, 38]]))
+                        }
+                      >
+                        <Plus className="h-4 w-4" />
+                      </Button>
+                    </Label>
+                    {hourRanges.map((elt, i) => (
+                      <HourRangeInput
+                        key={i}
+                        values={elt}
+                        onChange={(elt) =>
+                          setHourRange(
+                            hourRanges.map((e, j) => (i == j ? elt : e)),
+                          )
+                        }
+                      />
+                    ))}
                     <div className="grid gap-4 md:grid-cols-4 grid-cols-1 flex items-center">
                       <Label htmlFor="puissance" className="flex-auto">
                         Puissance d'abonnement (kVA)
@@ -129,20 +150,19 @@ function App() {
             </div>
           </div>
 
-
           <div className="grid gap-4">
             <div className="grid auto-rows-max items-start gap-4">
               <Card>
                 <CardHeader>
                   <CardTitle>Offre actuel</CardTitle>
                   <CardDescription>
-                    Remplissez ici vos informations pour comparer à votre offre actuelle.
+                    Remplissez ici vos informations pour comparer à votre offre
+                    actuelle.
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                <div className="grid gap-y-4">
-
-                <div className="grid gap-4 md:grid-cols-4 grid-cols-1 flex items-center">
+                  <div className="grid gap-y-4">
+                    <div className="grid gap-4 md:grid-cols-4 grid-cols-1 flex items-center">
                       <Label htmlFor="puissance" className="flex-auto">
                         Abonnement mensuel TTC
                       </Label>
@@ -152,61 +172,68 @@ function App() {
                         value={abo}
                         onChange={(elt) => setAbo(elt.target.value)}
                       />
-                  </div>
-                  <div className="grid gap-4 md:grid-cols-4 grid-cols-1 flex items-center">
-                    <Label htmlFor="puissance" className="flex-auto">
+                    </div>
+                    <div className="grid gap-4 md:grid-cols-4 grid-cols-1 flex items-center">
+                      <Label htmlFor="puissance" className="flex-auto">
                         Abonnement mensuel TTC
                       </Label>
-                      <RadioGroup value={typeAbo} onClick={elt => elt?.target?.value && setTypeAbo(elt?.target?.value)}>
-                      <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="HPHC" id="r1" />
-                        <Label htmlFor="r1">HC/HP</Label>
+                      <RadioGroup
+                        value={typeAbo}
+                        onClick={(elt) =>
+                          elt?.target?.value && setTypeAbo(elt?.target?.value)
+                        }
+                      >
+                        <div className="flex items-center space-x-2">
+                          <RadioGroupItem value="HPHC" id="r1" />
+                          <Label htmlFor="r1">HC/HP</Label>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <RadioGroupItem value="BASE" id="r2" />
+                          <Label htmlFor="r2">Base</Label>
+                        </div>
+                      </RadioGroup>
+                    </div>
+                    {typeAbo == "BASE" && (
+                      <div className="grid gap-4 md:grid-cols-4 grid-cols-1 flex items-center">
+                        <Label htmlFor="basekWh" className="flex-auto">
+                          Prix kWh (TTC)
+                        </Label>
+                        <Input
+                          id="basekWh"
+                          type="number"
+                          value={basekWh}
+                          onChange={(elt) => setBasekWh(elt.target.value)}
+                        />
                       </div>
-                      <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="BASE" id="r2" />
-                        <Label htmlFor="r2">Base</Label>
-                      </div>
-                    </RadioGroup>
+                    )}
+
+                    {typeAbo == "HPHC" && (
+                      <>
+                        <div className="grid gap-4 md:grid-cols-4 grid-cols-1 flex items-center">
+                          <Label htmlFor="hpkWh" className="flex-auto">
+                            Prix HP kWh (TTC)
+                          </Label>
+                          <Input
+                            id="hpkWh"
+                            type="number"
+                            value={hpkWh}
+                            onChange={(elt) => sethpkWh(elt.target.value)}
+                          />
+                        </div>
+                        <div className="grid gap-4 md:grid-cols-4 grid-cols-1 flex items-center">
+                          <Label htmlFor="hckWh" className="flex-auto">
+                            Prix HC kWh (TTC)
+                          </Label>
+                          <Input
+                            id="hckWh"
+                            type="number"
+                            value={hckWh}
+                            onChange={(elt) => sethckWh(elt.target.value)}
+                          />
+                        </div>
+                      </>
+                    )}
                   </div>
-                  {typeAbo == "BASE" && <div className="grid gap-4 md:grid-cols-4 grid-cols-1 flex items-center">
-                      <Label htmlFor="basekWh" className="flex-auto">
-                        Prix kWh (TTC)
-                      </Label>
-                      <Input
-                        id="basekWh"
-                        type="number"
-                        value={basekWh}
-                        onChange={(elt) => setBasekWh(elt.target.value)}
-                      />
-                  </div>}
-
-                  {typeAbo == "HPHC" && <>
-                    <div className="grid gap-4 md:grid-cols-4 grid-cols-1 flex items-center">
-                        <Label htmlFor="hpkWh" className="flex-auto">
-                          Prix HP kWh (TTC)
-                        </Label>
-                        <Input
-                          id="hpkWh"
-                          type="number"
-                          value={hpkWh}
-                          onChange={(elt) => sethpkWh(elt.target.value)}
-                        />
-                    </div>
-                    <div className="grid gap-4 md:grid-cols-4 grid-cols-1 flex items-center">
-                        <Label htmlFor="hckWh" className="flex-auto">
-                          Prix HC kWh (TTC)
-                        </Label>
-                        <Input
-                          id="hckWh"
-                          type="number"
-                          value={hckWh}
-                          onChange={(elt) => sethckWh(elt.target.value)}
-                        />
-                    </div>
-                  </>
-                  }
-
-                </div>
                 </CardContent>
               </Card>
             </div>
@@ -326,7 +353,10 @@ function App() {
                       </TableHeader>
                       <TableBody>
                         {computedOffers.map((elt) => (
-                          <TableRow key={elt.name} className={elt.reference ? "current-offer" : ""}>
+                          <TableRow
+                            key={elt.name}
+                            className={elt.reference ? "current-offer" : ""}
+                          >
                             <TableCell className="hidden sm:table-cell">
                               {elt.provider}
                             </TableCell>

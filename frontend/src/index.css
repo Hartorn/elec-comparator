@@ -66,10 +66,10 @@
   }
 }
 
-.current-offer{
+.current-offer {
   background-color: lightblue;
 }
 
-.dark .current-offer{
+.dark .current-offer {
   background-color: blueviolet;
 }

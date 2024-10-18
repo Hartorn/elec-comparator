@@ -18,7 +18,7 @@ export default function HourRangeInput({
             type="number"
             value={hStart}
             onChange={(elt) =>
-              onChange([elt.target.value, minStart, hStop, minStop])
+              onChange([+elt.target.value, minStart, hStop, minStop])
             } //setHStart(elt.target.value)}
             min="0"
             max="23"
@@ -29,7 +29,7 @@ export default function HourRangeInput({
             type="number"
             value={minStart}
             onChange={(elt) =>
-              onChange([hStart, elt.target.value, hStop, minStop])
+              onChange([hStart, +elt.target.value, hStop, minStop])
             } //setMinStart(elt.target.value)}
             min="0"
             max="59"
@@ -45,7 +45,7 @@ export default function HourRangeInput({
             type="number"
             value={hStop}
             onChange={(elt) =>
-              onChange([hStart, minStart, elt.target.value, minStop])
+              onChange([hStart, minStart, +elt.target.value, minStop])
             } // setHStop(elt.target.value)}
             min="0"
             max="23"
@@ -57,7 +57,7 @@ export default function HourRangeInput({
             type="number"
             value={minStop}
             onChange={(elt) =>
-              onChange([hStart, minStart, hStop, elt.target.value])
+              onChange([hStart, minStart, hStop, +elt.target.value])
             } // setMinStop(elt.target.value)}
             min="0"
             max="59"

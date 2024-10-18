@@ -38,7 +38,7 @@ frontend: _build ## Open a bash inside the backend container
 
 setup: _build ## Build and install the dependencies
 	docker compose run --rm ${SVC_FRONTEND} sudo chown -R $$(id -u):$$(id -g) ./.pnpm-store ./node_modules
-	docker compose run --rm ${SVC_FRONTEND} pnpm i
+	docker compose run --rm ${SVC_FRONTEND} pnpm i --prefer-frozen-lockfile
 .PHONY: setup
 
 format: ## Format all files inside frontend
@@ -50,8 +50,10 @@ check_linting: ## Verify code with lint tools
 	docker compose run --rm ${SVC_FRONTEND} pnpm run lint
 .PHONY: check_format
 
-build: ## Build production images
-	${DCK_PROD} build --pull
+build: setup ## Build html content
+	rm -rf ./frontend/dist ./docs
+	docker compose run --rm ${SVC_FRONTEND} pnpm run build
+	mv ./frontend/dist ./docs
 .PHONY: build
 
 logs: ## Show the logs (can be used with svc=backend to specify a service)

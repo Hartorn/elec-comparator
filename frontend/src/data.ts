@@ -1,4 +1,10 @@
-import { Offer, OfferType } from "./data/types";
+import {
+  ComputedOffer,
+  ConsumptionPoint,
+  CsvData,
+  Offer,
+  OfferType,
+} from "./data/types";
 
 function buildHpHcMapping(ranges: string[][]) {
   const predicate = (_: string, time: string) =>
@@ -16,31 +22,38 @@ function buildHpHcMapping(ranges: string[][]) {
 }
 
 export function aggregateValues(
-  consoValues,
+  consoValues: ConsumptionPoint[],
   ranges: string[][],
   maxDateSlice: number | undefined = undefined,
 ) {
   const hourMapping = buildHpHcMapping(ranges);
-  const dateConso = consoValues.reduce((acc, { conso, date, time }) => {
-    const newConso = aggregateConso({ conso, date, time }, hourMapping);
-    const aggKey = date.slice(0, maxDateSlice);
-    if (acc[aggKey]) {
-      Object.keys(newConso).forEach((key) => {
-        acc[aggKey][key] += newConso[key];
-      });
-    } else {
-      acc[aggKey] = newConso;
-    }
-    return acc;
-  }, {});
+  const dateConso = consoValues.reduce(
+    (acc, elt: ConsumptionPoint) => {
+      // const { conso, date, time } = elt;
+      const newConso = aggregateConso(elt, hourMapping);
+      const aggKey = elt.date.slice(0, maxDateSlice);
+      if (acc[aggKey]) {
+        Object.keys(newConso).forEach((key) => {
+          acc[aggKey][key] += newConso[key];
+        });
+      } else {
+        acc[aggKey] = newConso;
+      }
+      return acc;
+    },
+    {} as { [key: string]: { [key: string]: number } },
+  );
   return Object.entries(dateConso).map(([date, conso]) => ({
     date: date,
     ...conso,
   }));
 }
 
-export function aggregateConso({ conso, date, time }, mapping: Object) {
-  const initalObj = Object.keys(mapping).reduce(
+export function aggregateConso(
+  { conso, date, time }: ConsumptionPoint,
+  mapping: Object,
+) {
+  const initalObj: { [key: string]: number } = Object.keys(mapping).reduce(
     (acc, key) => ({ [key]: 0, ...acc }),
     {},
   );
@@ -52,17 +65,22 @@ export function aggregateConso({ conso, date, time }, mapping: Object) {
   }, initalObj);
 }
 
-export function csvToObj(csv: string) {
+export function csvToObj(csv: string): CsvData {
   const [headerStr, infosStr, _, ...consoStrLines] = csv.split("\n");
   const header = headerStr.split(";");
   const info = infosStr.split(";");
 
-  const infoObj = header.reduce((acc, elt, i) => {
-    acc[elt] = info[i];
-    return acc;
-  }, {});
+  const infoObj = header.reduce(
+    (acc, elt, i) => {
+      acc[elt] = info[i];
+      return acc;
+    },
+    {} as {
+      [key: string]: string;
+    },
+  );
 
-  const consoValues = consoStrLines
+  const consoValues: ConsumptionPoint[] = consoStrLines
     .filter((elt) => elt.trim())
     .map((line) => {
       const [fullDate, conso] = line.split(";");
@@ -97,16 +115,15 @@ export function csvToObj(csv: string) {
 }
 
 export function calculateOffer(
-  consoArr,
+  consoArr: ConsumptionPoint[],
   modificator: number,
   puissance: number,
   offer: Offer,
   ranges: string[][],
-) {
+): ComputedOffer {
   if (offer.type == OfferType.Base) {
     const consoAnnual =
-      consoArr.reduce((acc, { conso, date, time }) => acc + conso, 0) /
-      modificator;
+      consoArr.reduce((acc, { conso }) => acc + conso, 0) / modificator;
     const price = offer.prices[puissance];
     const priceAnnual = consoAnnual * price.Base;
     const subscription = 12 * price.monthly;
@@ -120,7 +137,7 @@ export function calculateOffer(
   if (offer.type == OfferType.HPHC) {
     const { date: _, ...consoAnnual } = aggregateValues(consoArr, ranges, 0)[0];
     // const consoAnnual = consoArr.reduce((acc, { conso, date, time }) => acc + conso, 0) / modificator;
-    const priceAnnual: { [priceType: string]: number } = Object.entries(
+    const priceAnnual: { [priceType: string]: number } = Object.entries<number>(
       consoAnnual,
     ).reduce(
       (acc, [priceType, conso]) => ({
@@ -144,4 +161,5 @@ export function calculateOffer(
       consoAnnual: consoAnnual,
     };
   }
+  throw "Not handled: " + offer.type;
 }

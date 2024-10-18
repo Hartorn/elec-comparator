@@ -1,5 +1,4 @@
 import {
-  ChartConfig,
   ChartContainer,
   ChartLegend,
   ChartLegendContent,
@@ -11,23 +10,28 @@ import { Bar, BarChart, CartesianGrid, XAxis } from "recharts";
 import {
   Select,
   SelectContent,
-  SelectGroup,
   SelectItem,
-  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
 import { aggregateValues } from "@/data";
 import { useState } from "react";
+import { ConsumptionPoint } from "@/data/types";
 
-const SLICING = {
+const SLICING: { [key: string]: number | undefined } = {
   day: undefined,
   month: -3,
   year: -6,
 };
 
-export function ConsommationChart({ rawConso, ranges }) {
-  const [range, setRange] = useState<string | undefined>("month");
+export function ConsommationChart({
+  rawConso,
+  ranges,
+}: {
+  rawConso: ConsumptionPoint[];
+  ranges: string[][];
+}) {
+  const [range, setRange] = useState<string>("month");
   const consoPerDay = aggregateValues(rawConso, ranges, SLICING[range]);
   const labels = Object.keys(consoPerDay[0]).filter((elt) => elt != "date");
   const chartConfig = labels.reduce(
@@ -40,12 +44,9 @@ export function ConsommationChart({ rawConso, ranges }) {
 
   return (
     <div>
-      <Select onValueChange={setRange} defaultValue={range}>
+      <Select onValueChange={setRange} defaultValue={range} value={range}>
         <SelectTrigger className="w-[180px]">
-          <SelectValue
-            placeholder="Selectionner l'aggrégation voulue"
-            value={range}
-          />
+          <SelectValue />
         </SelectTrigger>
         <SelectContent>
           <SelectItem value="day">Jour</SelectItem>

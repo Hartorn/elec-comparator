@@ -7,7 +7,6 @@ import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -15,7 +14,6 @@ import {
 import {
   Table,
   TableBody,
-  TableCaption,
   TableCell,
   TableHead,
   TableHeader,
@@ -29,18 +27,14 @@ import { ConsommationChart } from "./components/chart";
 import { calculateOffer, csvToObj } from "./data";
 import offers from "./data/offers";
 import HourRangeInput from "./components/hours";
-import { Offer, OfferType } from "./data/types";
+import { CsvData, Offer, OfferType } from "./data/types";
 
 function padNumber(nb: number) {
   return ("" + nb).padStart(2, "0");
 }
 
 function App() {
-  const [csv, setCsv] = useState(undefined);
-  // const [hStart, setHStart] = useState(22);
-  // const [hStop, setHStop] = useState(6);
-  // const [minStart, setMinStart] = useState(38);
-  // const [minStop, setMinStop] = useState(38);
+  const [csv, setCsv] = useState<CsvData | void>(undefined);
   const [puissance, setPuissance] = useState(6);
   const [abo, setAbo] = useState(13.01);
   const [basekWh, setBasekWh] = useState(0.2516);
@@ -49,18 +43,14 @@ function App() {
 
   const [typeAbo, setTypeAbo] = useState("HPHC");
 
-  const [hourRanges, setHourRange] = useState([[22, 38, 6, 38]]);
+  const [hourRanges, setHourRange] = useState<number[][]>([[22, 38, 6, 38]]);
 
-  const hcRanges = hourRanges.map(([hStart, minStart, hStop, minStop]) => [
-    `${padNumber(hStart)}:${padNumber(minStart)}:00`,
-    `${padNumber(hStop)}:${padNumber(minStop)}:00`,
-  ]);
-  // [
-  //   [
-  //     `${padNumber(hStart)}:${padNumber(minStart)}:00`,
-  //     `${padNumber(hStop)}:${padNumber(minStop)}:00`,
-  //   ],
-  // ];
+  const hcRanges = hourRanges.map(
+    ([hStart, minStart, hStop, minStop]: number[]) => [
+      `${padNumber(hStart)}:${padNumber(minStart)}:00`,
+      `${padNumber(hStop)}:${padNumber(minStop)}:00`,
+    ],
+  );
   const referenceOffer: Offer = {
     provider: "",
     reference: true,
@@ -139,7 +129,7 @@ function App() {
                         id="puissance"
                         type="number"
                         value={puissance}
-                        onChange={(elt) => setPuissance(elt.target.value)}
+                        onChange={(elt) => setPuissance(+elt.target.value)}
                         min="3"
                         max="36"
                       />
@@ -170,7 +160,7 @@ function App() {
                         id="abo"
                         type="number"
                         value={abo}
-                        onChange={(elt) => setAbo(elt.target.value)}
+                        onChange={(elt) => setAbo(+elt.target.value)}
                       />
                     </div>
                     <div className="grid gap-4 md:grid-cols-4 grid-cols-1 flex items-center">
@@ -180,7 +170,8 @@ function App() {
                       <RadioGroup
                         value={typeAbo}
                         onClick={(elt) =>
-                          elt?.target?.value && setTypeAbo(elt?.target?.value)
+                          (elt?.target as any)?.value &&
+                          setTypeAbo((elt?.target as any)?.value)
                         }
                       >
                         <div className="flex items-center space-x-2">
@@ -202,7 +193,7 @@ function App() {
                           id="basekWh"
                           type="number"
                           value={basekWh}
-                          onChange={(elt) => setBasekWh(elt.target.value)}
+                          onChange={(elt) => setBasekWh(+elt.target.value)}
                         />
                       </div>
                     )}
@@ -217,7 +208,7 @@ function App() {
                             id="hpkWh"
                             type="number"
                             value={hpkWh}
-                            onChange={(elt) => sethpkWh(elt.target.value)}
+                            onChange={(elt) => sethpkWh(+elt.target.value)}
                           />
                         </div>
                         <div className="grid gap-4 md:grid-cols-4 grid-cols-1 flex items-center">
@@ -228,7 +219,7 @@ function App() {
                             id="hckWh"
                             type="number"
                             value={hckWh}
-                            onChange={(elt) => sethckWh(elt.target.value)}
+                            onChange={(elt) => sethckWh(+elt.target.value)}
                           />
                         </div>
                       </>
@@ -254,7 +245,7 @@ function App() {
                     id="file"
                     type="file"
                     onChange={({ target: { files: selectorFiles } }) => {
-                      if (selectorFiles.length <= 0) {
+                      if (!selectorFiles || selectorFiles.length <= 0) {
                         setCsv(undefined);
                         return;
                       }
